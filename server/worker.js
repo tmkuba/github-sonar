@@ -3,8 +3,31 @@ const dotenv = require('dotenv');
 dotenv.config();
 const axios = require('axios');
 const winston = require('winston');
+const Promise = require('bluebird');
 const db = require('./db');
 
+function promiseDebounce(fn, delay, count) {
+  let working = 0;
+  const queue = [];
+  function work() {
+    if ((queue.length === 0) || (working === count)) return;
+    working += 1;
+    Promise.delay(delay).tap(() => {
+      working -= 1;
+    })
+      .then(work);
+    const next = queue.shift();
+    next[2](fn.apply(next[0], next[1]));
+  }
+  return function debounced(...args) {
+    return new Promise(function (resolve) {
+      queue.push([this, args, resolve]);
+      if (working < count) work();
+    }.bind(this));
+  };
+}
+
+axios.get = promiseDebounce(axios.get, 750, 1);
 
 winston.level = 'debug';
 
@@ -119,39 +142,62 @@ const language = 'javascript';
 const minStars = 1000;
 const url = `https://api.github.com/search/repositories?q=+language:${language}+stars:>=${minStars}+sort:stars`;
 
-downloadRepos(url)
-  .then((repoList) => {
-    repoList.slice(0, 1).forEach((repo) => {
-      winston.log('debug', 'repo:', repo.full_name);
+const go = async () => {
+  const repoIDs = await db.getIDs();
+  const repoDone = repoIDs.reduce((acc, repo) => {
+    acc[repo.id] = true;
+    return acc;
+  }, {});
 
-      // for each repo, get contributors
-      downloadContributors(repo.contributors_url)
-        .then(allContribs => allContribs.map(contrib => downloadUserInfo(contrib.url)
-          .then((userInfo) => {
-            winston.log('debug', `  ${repo.name} :: ${contrib.login} ==> ${userInfo.name}`);
-            Object.assign(contrib, userInfo);
-            return contrib;
-            // store contrib somewhere
-          })))
-        .then((contributors) => {
-          Promise.all(contributors)
-            .then((allContributors) => {
-              const locationDict = allContributors.reduce((memo, contrib) => {
-                memo[contrib.location] = memo[contrib.location]
-                  ? memo[contrib.location] + contrib.contributions
-                  : contrib.contributions;
-                return memo;
-              }, {});
+  console.log(repoDone, 'repoDone');
 
-              repo.contributors = allContributors;
-              repo.gravity = locationDict;
+  downloadRepos(url)
+    .then((repoList) => {
+      repoList.forEach((repo) => {
+        winston.log('debug', 'repo:', repo.full_name);
 
-              // store into DB
-              db.save(repo);
-            });
-        });
+        if (repoDone[repo.id]) {
+          winston.log('debug', `repo ${repo.name} done, skipping...`);
+          return;
+        }
+        // for each repo, get contributors
+        downloadContributors(repo.contributors_url)
+          .then(allContribs => allContribs.map(contrib => downloadUserInfo(contrib.url)
+            .then((userInfo) => {
+              winston.log('debug', `  ${repo.name} :: ${contrib.login} ==> ${userInfo.name}`);
+              Object.assign(contrib, userInfo);
+              return contrib;
+              // store contrib somewhere
+            })))
+          .then((contributors) => {
+            Promise.all(contributors)
+              .then((allContributors) => {
+                const locationDict = allContributors.reduce((memo, contrib) => {
+                  memo[contrib.location] = memo[contrib.location]
+                    ? memo[contrib.location] + contrib.contributions
+                    : contrib.contributions;
+                  return memo;
+                }, {});
+
+                repo.contributors = allContributors;
+                repo.gravity = locationDict;
+                repo.locations = Object.keys(repo.gravity);
+
+                // store into DB
+                db.save(repo)
+                  .then(() => {
+                    winston.log('debug', `${repo.name} saved.`);
+                  })
+                  .catch((error) => {
+                    winston.log('error', `Error saving ${repo.name}: ${error.message}`);
+                  });
+              });
+          });
+      });
     });
-  });
+};
+
+go();
 
 process.on('SIGINT', () => {
   console.log('\nCache hits', userCacheHits);

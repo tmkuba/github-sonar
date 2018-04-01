@@ -31,6 +31,8 @@ const repoSchema = mongoose.Schema({
   gravity: {
   },
 
+  locations: [String],
+
   contributors: [{
     id: Number,
     login: String,
@@ -54,16 +56,13 @@ const repoSchema = mongoose.Schema({
 
 const Repo = mongoose.model('Repo', repoSchema);
 
-const save = (repo) => {
-  const myRepo = new Repo(repo);
+const save = repo => Repo.create(repo);
 
-  myRepo.save((error) => {
-    if (error) {
-      console.log('Repo.save error', error.name, error.message);
-    }
-  });
-};
+const getIDs = () => Repo.find().select('id');
+
+// db.repos.find( { "locations": /Spain/ }).pretty()
+// const findLocation = searchTerm => Repo.find({ location: /searchTerm/ });
 
 module.exports = {
-  save, mongoose,
+  save, getIDs, mongoose,
 };

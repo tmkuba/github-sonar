@@ -8,5 +8,6 @@ module.exports = {
     "rules": {
       "no-await-in-loop": 1,
       "no-param-reassign": 1,
+      "prefer-arrow-callback": 1,
     },
 };
