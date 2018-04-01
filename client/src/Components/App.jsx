@@ -5,6 +5,15 @@ import RepoList from './RepoList';
 import Contributors from './Contributors';
 import UserInfo from './UserInfo';
 
+const DEFAULT_REPO_FOCUS = {
+  id: 0,
+  contributors: [],
+};
+
+const DEFAULT_USER_FOCUS = {
+  id: 0,
+};
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -17,15 +26,13 @@ class App extends React.Component {
       lastSearched: '',
 
       repoList: [],
-      repoFocus: {
-        contributors: [],
-      },
-      userFocus: {},
+      repoFocus: DEFAULT_REPO_FOCUS,
+      userFocus: DEFAULT_USER_FOCUS,
     };
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleRepoClick = this.handleRepoClick.bind(this);
     this.handleUserClick = this.handleUserClick.bind(this);
   }
@@ -36,9 +43,7 @@ class App extends React.Component {
 
   // EVENT HANDLING
   //
-  handleKeyPress(e) {
-    // DEBUG
-    console.log('handleKeyPress', e.keyCode);
+  handleKeyUp(e) {
     if (e.keyCode === 13) {
       this.handleSearch();
     }
@@ -58,15 +63,16 @@ class App extends React.Component {
   }
 
   handleRepoClick(repoId) {
-    console.log('handleRepoClick', repoId);
+    // console.log('handleRepoClick', repoId);
     const newRepoFocus = this.state.repoList.find(repo => repo.id === repoId);
     this.setState({
       repoFocus: newRepoFocus,
+      userFocus: DEFAULT_USER_FOCUS,
     });
   }
 
   handleUserClick(userId) {
-    console.log('handleUserClick', userId);
+    // console.log('handleUserClick', userId);
     const newUserFocus = this.state.repoFocus.contributors.find(user => user.id === userId);
     this.setState({
       userFocus: newUserFocus,
@@ -77,6 +83,7 @@ class App extends React.Component {
   search(searchTerm) {
     this.setState({
       waiting: true,
+      message: 'Searching...',
     });
 
     helper.search(searchTerm)
@@ -86,6 +93,8 @@ class App extends React.Component {
           this.setState({
             message: `Searched for '${searchTerm}'`,
             repoList: response.data,
+            userFocus: DEFAULT_USER_FOCUS,
+            repoFocus: DEFAULT_REPO_FOCUS,
           });
         } else {
           this.setState({
@@ -120,7 +129,7 @@ class App extends React.Component {
             placeholder="Location"
             value={this.state.searchVal}
             onChange={this.handleSearchChange}
-            onKeyPress={this.handleKeyPress}
+            onKeyUp={this.handleKeyUp}
           />
           <button
             disabled={this.state.waiting}
@@ -128,9 +137,9 @@ class App extends React.Component {
           >
             Search
           </button>
-          <div>
-            {this.state.waiting ? 'Searching...' : ''}
-          </div>
+        </div>
+        <div>
+          <img src={`https://maps.googleapis.com/maps/api/staticmap?center=${this.state.lastSearched}&zoom=9&size=500x100`} alt="map" />
         </div>
         <div>
           { this.state.errorMessage }
@@ -142,11 +151,14 @@ class App extends React.Component {
           <RepoList
             list={this.state.repoList}
             clickHandler={this.handleRepoClick}
+            searchTerm={this.state.lastSearched}
+            focusID={this.state.repoFocus.id}
           />
           <Contributors
             repo={this.state.repoFocus}
             clickHandler={this.handleUserClick}
             searchTerm={this.state.lastSearched}
+            focusID={this.state.userFocus.id}
           />
           <UserInfo
             user={this.state.userFocus}
