@@ -6,6 +6,7 @@ const winston = require('winston');
 const Promise = require('bluebird');
 const db = require('./db');
 
+// rate limiting, per https://github.com/axios/axios/issues/230
 function promiseDebounce(fn, delay, count) {
   let working = 0;
   const queue = [];
@@ -27,6 +28,7 @@ function promiseDebounce(fn, delay, count) {
   };
 }
 
+const repoGet = promiseDebounce(axios.get, 2000, 1);
 axios.get = promiseDebounce(axios.get, 750, 1);
 
 winston.level = 'debug';
@@ -48,11 +50,20 @@ const downloadRepos = async (url, pageLimit = 1) => {
       break;
     }
     winston.log('debug', 'GET', nextURL);
-    const response = await axios.get(nextURL, REQUEST_HEADERS);
+    const response = await repoGet(nextURL, REQUEST_HEADERS);
 
-    nextURL = response.headers.link
-      ? response.headers.link.slice(1, response.headers.link.indexOf('>'))
-      : null;
+    // winston.log('debug', response.headers.link);
+    if (response.headers.link) {
+      const nextIndex = response.headers.link.indexOf('next');
+      nextURL = nextIndex === -1
+        ? null
+        : response.headers.link.slice(
+          response.headers.link.lastIndexOf('<', nextIndex) + 1,
+          response.headers.link.lastIndexOf('>', nextIndex),
+        );
+    } else {
+      nextURL = null;
+    }
 
     output.push(...response.data.items.map(repo => ({
       id: repo.id,
@@ -139,7 +150,7 @@ const downloadUserInfo = (url) => {
 
 
 const language = 'javascript';
-const minStars = 1000;
+const minStars = 700;
 const url = `https://api.github.com/search/repositories?q=+language:${language}+stars:>=${minStars}+sort:stars`;
 
 const go = async () => {
@@ -149,9 +160,9 @@ const go = async () => {
     return acc;
   }, {});
 
-  console.log(repoDone, 'repoDone');
+  // console.log(repoDone, 'repoDone');
 
-  downloadRepos(url)
+  downloadRepos(url, 50)
     .then((repoList) => {
       repoList.forEach((repo) => {
         winston.log('debug', 'repo:', repo.full_name);
@@ -164,7 +175,7 @@ const go = async () => {
         downloadContributors(repo.contributors_url)
           .then(allContribs => allContribs.map(contrib => downloadUserInfo(contrib.url)
             .then((userInfo) => {
-              winston.log('debug', `  ${repo.name} :: ${contrib.login} ==> ${userInfo.name}`);
+              winston.log('silly', `  ${repo.name} :: ${contrib.login} ==> ${userInfo.name}`);
               Object.assign(contrib, userInfo);
               return contrib;
               // store contrib somewhere
@@ -186,7 +197,8 @@ const go = async () => {
                 // store into DB
                 db.save(repo)
                   .then(() => {
-                    winston.log('debug', `${repo.name} saved.`);
+                    winston.log('debug', `${repo.full_name} saved. [${new Date().toString()}]`);
+                    repoDone[repo.id] = true;
                   })
                   .catch((error) => {
                     winston.log('error', `Error saving ${repo.name}: ${error.message}`);
