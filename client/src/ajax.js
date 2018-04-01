@@ -42,6 +42,13 @@ const search = searchTerm => axios.get(`${URL}/locations/${searchTerm}`)
         repo.totDevs = totDevs;
         return repo;
       });
+
+      response.data.sort((a, b) => {
+        if (a.numDevs === b.numDevs) {
+          return (a.totDevs - b.totDevs);
+        }
+        return b.numDevs - a.numDevs;
+      });
     }
 
     return response;

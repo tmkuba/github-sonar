@@ -45,15 +45,19 @@ class App extends React.Component {
   //
   handleKeyUp(e) {
     if (e.keyCode === 13) {
-      this.handleSearch();
+      if (this.state.searchVal.length > 0) {
+        this.handleSearch();
+      }
     }
   }
 
   handleSearch() {
-    this.search(this.state.searchVal);
-    this.setState({
-      searchVal: '',
-    });
+    if (this.state.searchVal.length > 0) {
+      this.search(this.state.searchVal);
+      this.setState({
+        searchVal: '',
+      });
+    }
   }
 
   handleSearchChange(e) {
@@ -83,6 +87,7 @@ class App extends React.Component {
   search(searchTerm) {
     this.setState({
       waiting: true,
+      errorMessage: '',
       message: 'Searching...',
     });
 
@@ -91,6 +96,7 @@ class App extends React.Component {
         // console.log('componentDidMount', response);
         if (response.status === 200) {
           this.setState({
+            errorMessage: '',
             message: `Searched for '${searchTerm}'`,
             repoList: response.data,
             userFocus: DEFAULT_USER_FOCUS,
@@ -99,12 +105,14 @@ class App extends React.Component {
         } else {
           this.setState({
             errorMessage: response,
+            message: '',
           });
         }
       })
       .catch((error) => {
         this.setState({
           errorMessage: error.message,
+          message: '',
         });
       })
       .finally(() => {
@@ -116,36 +124,42 @@ class App extends React.Component {
   }
 
   render() {
+    const googleMapImage = `https://maps.googleapis.com/maps/api/staticmap?center=${this.state.lastSearched}&zoom=9&size=600x120`;
+
     return (
       <div>
-        <h1>
-          Github Sonar
-        </h1>
-        <div>
-          <input
-            disabled={this.state.waiting}
-            id="searchBar"
-            type="text"
-            placeholder="Location"
-            value={this.state.searchVal}
-            onChange={this.handleSearchChange}
-            onKeyUp={this.handleKeyUp}
-          />
-          <button
-            disabled={this.state.waiting}
-            onClick={this.handleSearch}
-          >
-            Search
-          </button>
-        </div>
-        <div>
-          <img src={`https://maps.googleapis.com/maps/api/staticmap?center=${this.state.lastSearched}&zoom=9&size=500x100`} alt="map" />
-        </div>
-        <div>
-          { this.state.errorMessage }
-        </div>
-        <div>
-          { this.state.message }
+        <div className="header">
+          <div className="leftTop">
+            <h1>
+              GitHub Sonar
+            </h1>
+            <div className="searchBar">
+              <input
+                disabled={this.state.waiting}
+                id="searchBar"
+                type="text"
+                placeholder="Where shall we try next?"
+                value={this.state.searchVal}
+                onChange={this.handleSearchChange}
+                onKeyUp={this.handleKeyUp}
+              />
+              <button
+                disabled={this.state.waiting}
+                onClick={this.handleSearch}
+              >
+                Go!
+              </button>
+            </div>
+            <div className="errorMessage">
+              { this.state.errorMessage }
+            </div>
+            <div className="message">
+              { this.state.message }
+            </div>
+          </div>
+          <div className="map">
+            <img src={googleMapImage} alt="map" />
+          </div>
         </div>
         <div className="container">
           <RepoList
@@ -167,7 +181,5 @@ class App extends React.Component {
       </div>);
   }
 }
-
-// const App = () => (<div>Hello World From App!</div>);
 
 export default App;

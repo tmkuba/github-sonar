@@ -5,17 +5,19 @@ const RepoList = ({
   list, clickHandler, focusID,
 }) => (
   <div className="column">
+    <h3>
+      Repos
+    </h3>
     <ul>
       { list.map(repo => (
         <li
-          className={focusID === repo.id ? 'selected' : ''}
+          className={focusID === repo.id ? 'repo selected' : 'repo'}
           onClick={() => clickHandler(repo.id)}
         >
-          <div><a href={repo.html_url}>{repo.full_name}</a> - {repo.description}</div>
-          <div>
-            Stars: {repo.stargazers_count}
-            | {repo.language}
-            | {repo.numDevs} / {repo.totDevs}
+          <div className="repoName"><a href={repo.html_url}>{repo.name}</a></div>
+          <div className="repoDesc">{repo.description}</div>
+          <div className="repoInfo">
+            ★ {repo.stargazers_count} &bull; {repo.language} &bull; {repo.numDevs} / {repo.totDevs}
           </div>
         </li>)) }
     </ul>

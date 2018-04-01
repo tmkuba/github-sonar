@@ -1,12 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Octicon from 'react-component-octicons';
 
 const Contributors = ({
   repo, clickHandler, searchTerm, focusID,
-}) => (
-  repo.full_name
+}) => {
+  const output = repo.full_name
     ? (
       <div className="column">
+        <h3>
+          Contributors
+        </h3>
         <ul>
           { repo.contributors.map((user) => {
             const highlight = user.location
@@ -15,20 +19,47 @@ const Contributors = ({
             let classes = 'contributor';
             classes += highlight ? ' highlight' : '';
             classes += focusID === user.id ? ' selected' : '';
+
+            const location = user.location
+              ? (
+                <div className="contributorLocation">
+                  <Octicon name="location" /> {user.location}
+                </div>)
+              : null;
+
+            const name = user.name
+              ? (
+                <div className="contributorMain">
+                  <a href={user.html_url}><Octicon name="mark-github" /> {user.login}</a>
+                    &nbsp;&bull; {user.name}
+                </div>)
+              : (
+                <div className="contributorMain">
+                  <a href={user.html_url}><Octicon name="mark-github" /> {user.login}</a>
+                </div>);
+
             return (
               <li className={classes} onClick={() => clickHandler(user.id)}>
-                <div><img className="mini_avatar" src={user.avatar_url} alt="avatar" /></div>
-                <div><a href={user.html_url}>{user.login}</a> | {user.location} | {user.name}</div>
                 <div>
-                  Contributions: {user.contributions}
-                   | Followers: {user.followers}
-                   | Repos: {user.public_repos}
+                  <img className="mini_avatar" src={user.avatar_url} alt="avatar" />
+                </div>
+                <div className="contributorText">
+                  {name}
+                  {location}
+                  <div className="contributorSecond">
+                    <Octicon name="git-pull-request" /> {user.contributions}
+                     &nbsp;&bull; <Octicon name="heart" /> {user.followers}
+                     &nbsp;&bull; <Octicon name="repo" /> {user.public_repos}
+                  </div>
                 </div>
               </li>);
           }) }
         </ul>
       </div>)
-    : (<div className="column" />));
+    : (<div className="column" />);
+  return output;
+};
+
 
 Contributors.propTypes = {
   repo: PropTypes.shape({
