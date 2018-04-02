@@ -4,7 +4,7 @@ const URL = process.env.AJAX_URL || 'http://localhost:5000';
 
 const search = searchTerm => axios.get(`${URL}/locations/${searchTerm}`)
   .then((response) => {
-    console.log('AJAX success!', response);
+    // console.log('AJAX success!', response);
 
     // transform response.data
     if (response.status === 200) {
@@ -54,7 +54,7 @@ const search = searchTerm => axios.get(`${URL}/locations/${searchTerm}`)
     return response;
   })
   .catch((error) => {
-    console.log('AJAX error!', error.message);
+    console.log('AJAX error', error.message);
   });
 
 module.exports = {

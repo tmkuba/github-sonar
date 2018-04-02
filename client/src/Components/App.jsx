@@ -48,7 +48,6 @@ class App extends React.Component {
   //
 
   handleFilterClick(evt) {
-    console.log('handleFilterClick', evt.target.id);
     const filter = evt.target.id;
     let newList;
     if (filter === this.state.filter) {
