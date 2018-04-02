@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URI);
+mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on('disconnected', () => {
   console.log('MONGOOSE DISCONNECTED');
