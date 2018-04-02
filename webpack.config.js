@@ -1,9 +1,10 @@
 const path = require('path');
-const dotenv = require('dotenv-webpack');
+const dotenv = require('dotenv');
+const webpack = require('webpack');
+dotenv.config();
 
 module.exports = {
   entry: path.resolve(__dirname, 'client', 'src', 'index.jsx'),
-    // './client/src/index.jsx',
 
   module: {
     rules: [
@@ -25,7 +26,8 @@ module.exports = {
   },
 
   plugins: [
-    new dotenv()
+    // new dotenv()
+    new webpack.EnvironmentPlugin(['GOOGLE_API_KEY']),
   ],
 
   output: {
