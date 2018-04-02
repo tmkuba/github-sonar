@@ -35,9 +35,10 @@ app.get('/locations/:searchTerm', (req, res) => {
           }
           return acc;
         }, 0);
-        const totDevs = repo.contributors.length;
+
         repo.numDevs = numDevs;
-        repo.totDevs = totDevs;
+        repo.totDevs = repo.contributors.length;
+
         return repo;
       });
 
@@ -48,7 +49,7 @@ app.get('/locations/:searchTerm', (req, res) => {
         return b.numDevs - a.numDevs;
       });
 
-      res.send(newResults.slice(250));
+      res.send(newResults.slice(0, 150));
     })
     .catch((error) => {
       winston.log('error', `Error ${error.message}`);

@@ -61,7 +61,7 @@ const save = repo => Repo.create(repo);
 const getIDs = () => Repo.find().select('id');
 
 // db.repos.find( { "locations": /Spain/ }).pretty()
-const findLocation = searchTerm => Repo.find({ locations: new RegExp(searchTerm, 'i') }).sort('-stargazers_count');
+const findLocation = searchTerm => Repo.find({ locations: new RegExp(searchTerm, 'i') }).sort('-stargazers_count').lean();
 
 module.exports = {
   save, getIDs, findLocation, mongoose,
