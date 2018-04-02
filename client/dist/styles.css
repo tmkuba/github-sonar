@@ -1,0 +1,187 @@
+body {
+  font-family: helvetica, arial, sans-serif;
+  color: #222;
+  background-color: #FCFCFC;
+}
+
+h1 {
+  margin-top: 3px;
+  margin-bottom: 7px;
+  font-family: 'Gruppo', cursive;
+}
+
+h3 {
+  margin-left: 5px;
+  margin-top: 3px;
+  margin-bottom: 0px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0px;
+  margin-top: 3px;
+}
+
+a {
+  color: #089;
+  text-decoration: none;
+}
+
+input {
+  /*width: 250px;*/
+  width: 85%;
+  height: 40px;
+  padding: 5px;
+  font-size: large;
+  vertical-align: bottom;
+}
+
+
+.goBtn {
+  width: 15%;
+  height: 40px;
+  /*width: 50px;*/
+  font-size: large;
+}
+
+.searchBar {
+  
+}
+
+.filter {
+  text-align: center;
+}
+
+.filterBtn {
+  margin-top: 5px;
+  height: 30px;
+  /*width: 50px;*/
+  font-size: small;
+  background-color: #EEE;
+}
+
+.filterBtn:focus {
+  outline: none;
+}
+
+.activeBtn {
+  background-color: #ACC
+}
+
+.errorMessage {
+  margin-top: 10px;
+  margin-left: 10px;
+  color: #A00;
+}
+
+.message {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  color: #888;
+}
+
+.highlight {
+  background-color: #FF8;
+}
+
+.avatar {
+  width: 250px;
+  height: 250px;
+}
+
+.mini_avatar {
+  width: 60px;
+  height: 60px;
+}
+
+.selected {
+  background-color: #DEE;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  width: 33%;
+  max-height: 80%;
+  overflow: auto;
+}
+
+.contributor {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+}
+
+.contributorText {
+  margin-left: 10px;
+}
+
+.contributorMain {
+  margin-bottom: 5px;
+}
+
+.contributorLocation {
+  margin-bottom: 5px;
+  margin-left: 10px;
+}
+
+.contributorSecond {
+  margin-left: 10px;
+  font-size: smaller;
+  color: #777;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+}
+
+.leftTop {
+  display: flex;
+  flex-direction: column;
+  width:33%;
+}
+
+.map {
+  width: 66%;
+  text-align: center;
+}
+
+.userInfo {
+  padding-left: 10px;
+}
+
+.userInfoLineMain {
+  padding: 5px;
+  color: #333;
+  font-size: larger;
+}
+
+.userInfoLine {
+  padding: 3px;
+  color: #777;
+  font-size: small;
+}
+
+.repo {
+  padding: 7px;
+}
+
+.repoName {
+  font-weight: bold;
+}
+
+.repoDesc {
+  color: #777;
+  margin-left: 10px;
+}
+
+.repoInfo {
+  margin-top: 5px;
+  margin-left: 10px;
+  font-size: smaller;
+}
