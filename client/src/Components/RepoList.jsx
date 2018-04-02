@@ -6,7 +6,7 @@ const RepoList = ({
 }) => (
   <div className="column">
     <h3>
-      Repos
+      {list.length} Repos
     </h3>
     <ul>
       { list.map(repo => (

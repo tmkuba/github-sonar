@@ -26,6 +26,8 @@ class App extends React.Component {
       lastSearched: '',
 
       repoList: [],
+      filteredList: [],
+      filter: 'All',
       repoFocus: DEFAULT_REPO_FOCUS,
       userFocus: DEFAULT_USER_FOCUS,
     };
@@ -35,6 +37,7 @@ class App extends React.Component {
     this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleRepoClick = this.handleRepoClick.bind(this);
     this.handleUserClick = this.handleUserClick.bind(this);
+    this.handleFilterClick = this.handleFilterClick.bind(this);
   }
 
   componentDidMount() {
@@ -43,6 +46,26 @@ class App extends React.Component {
 
   // EVENT HANDLING
   //
+
+  handleFilterClick(evt) {
+    console.log('handleFilterClick', evt.target.id);
+    const filter = evt.target.id;
+    let newList;
+    if (filter === this.state.filter) {
+      return;
+    }
+
+    if (filter === 'All') {
+      newList = this.state.repoList;
+    } else {
+      newList = this.state.repoList.filter(item => item.language === filter);
+    }
+    this.setState({
+      filteredList: newList,
+      filter,
+    });
+  }
+
   handleKeyUp(e) {
     if (e.keyCode === 13) {
       if (this.state.searchVal.length > 0) {
@@ -95,10 +118,17 @@ class App extends React.Component {
       .then((response) => {
         // console.log('componentDidMount', response);
         if (response.status === 200) {
+          let filteredList;
+          if (this.state.filter === 'All') {
+            filteredList = response.data;
+          } else {
+            filteredList = response.data.filter(item => item.language === this.state.filter);
+          }
           this.setState({
             errorMessage: '',
             message: `Searched for '${searchTerm}'`,
             repoList: response.data,
+            filteredList,
             userFocus: DEFAULT_USER_FOCUS,
             repoFocus: DEFAULT_REPO_FOCUS,
           });
@@ -124,7 +154,7 @@ class App extends React.Component {
   }
 
   render() {
-    const googleMapImage = `https://maps.googleapis.com/maps/api/staticmap?center=${this.state.lastSearched}&zoom=9&size=600x120`;
+    const googleMapImage = `https://maps.googleapis.com/maps/api/staticmap?center=${this.state.lastSearched}&zoom=9&size=600x135`;
 
     return (
       <div>
@@ -144,17 +174,28 @@ class App extends React.Component {
                 onKeyUp={this.handleKeyUp}
               />
               <button
+                className="goBtn"
                 disabled={this.state.waiting}
                 onClick={this.handleSearch}
               >
                 Go!
               </button>
             </div>
-            <div className="errorMessage">
-              { this.state.errorMessage }
+            <div className="filter">
+              {
+                ['JavaScript', 'Python', 'Go', 'All'].map(lang => (
+                  <button
+                    className={this.state.filter === lang ? 'filterBtn activeBtn' : 'filterBtn'}
+                    id={lang}
+                    onClick={this.handleFilterClick}
+                  >
+                    {lang}
+                  </button>))
+              }
             </div>
             <div className="message">
               { this.state.message }
+              { this.state.errorMessage }
             </div>
           </div>
           <div className="map">
@@ -163,7 +204,7 @@ class App extends React.Component {
         </div>
         <div className="container">
           <RepoList
-            list={this.state.repoList}
+            list={this.state.filteredList}
             clickHandler={this.handleRepoClick}
             searchTerm={this.state.lastSearched}
             focusID={this.state.repoFocus.id}

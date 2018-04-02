@@ -35,7 +35,8 @@ input {
   vertical-align: bottom;
 }
 
-button {
+
+.goBtn {
   width: 15%;
   height: 40px;
   /*width: 50px;*/
@@ -44,6 +45,26 @@ button {
 
 .searchBar {
   
+}
+
+.filter {
+  text-align: center;
+}
+
+.filterBtn {
+  margin-top: 5px;
+  height: 30px;
+  /*width: 50px;*/
+  font-size: small;
+  background-color: #EEE;
+}
+
+.filterBtn:focus {
+  outline: none;
+}
+
+.activeBtn {
+  background-color: #ACC
 }
 
 .errorMessage {
@@ -84,7 +105,7 @@ button {
 
 .column {
   width: 33%;
-  max-height: 83%;
+  max-height: 80%;
   overflow: auto;
 }
 
