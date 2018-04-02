@@ -20,12 +20,25 @@ const Contributors = ({
             classes += highlight ? ' highlight' : '';
             classes += focusID === user.id ? ' selected' : '';
 
-            const location = user.location
-              ? (
+            let lineTwo;
+            if (user.location && user.company) {
+              lineTwo = (
+                <div className="contributorLocation">
+                  <Octicon name="location" /> {user.location} &bull; {user.company}
+                </div>);
+            } else if (user.location) {
+              lineTwo = (
                 <div className="contributorLocation">
                   <Octicon name="location" /> {user.location}
-                </div>)
-              : null;
+                </div>);
+            } else if (user.company) {
+              lineTwo = (
+                <div className="contributorLocation">
+                  <Octicon name="organization" /> {user.company}
+                </div>);
+            } else {
+              lineTwo = null;
+            }
 
             const name = user.name
               ? (
@@ -45,11 +58,10 @@ const Contributors = ({
                 </div>
                 <div className="contributorText">
                   {name}
-                  {location}
+                  {lineTwo}
                   <div className="contributorSecond">
                     <Octicon name="git-pull-request" /> {user.contributions}
                      &nbsp;&bull; <Octicon name="heart" /> {user.followers}
-                     &nbsp;&bull; <Octicon name="repo" /> {user.public_repos}
                   </div>
                 </div>
               </li>);

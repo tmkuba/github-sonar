@@ -161,6 +161,12 @@ input {
   font-size: larger;
 }
 
+.userInfoLineBio {
+  padding: 5px;
+  color: #777;
+  /*font-size: small;*/
+}
+
 .userInfoLine {
   padding: 3px;
   color: #777;

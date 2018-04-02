@@ -12,7 +12,7 @@ const UserInfo = ({ user }) => {
     : null;
 
   const bio = user.bio
-    ? (<div className="userInfoLine"><Octicon name="quote" /> {user.bio}</div>)
+    ? (<div className="userInfoLineBio"><Octicon name="quote" /> {user.bio}</div>)
     : null;
 
   const blog = user.blog
