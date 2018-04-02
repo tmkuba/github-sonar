@@ -8,7 +8,7 @@ const search = searchTerm => axios.get(`/locations/${searchTerm}`)
 
     // transform response.data
     if (response.status === 200) {
-      const regex = new RegExp(searchTerm, 'i');
+      // const regex = new RegExp(searchTerm, 'i');
 
       // calculate weight in search term
       // const gravity = Object.keys(repo.gravity).reduce((acc, key) => {
@@ -29,26 +29,26 @@ const search = searchTerm => axios.get(`/locations/${searchTerm}`)
 
       // console.log(gravity);
 
-      response.data = response.data.map((repo) => {
-        const numDevs = repo.contributors.reduce((acc, user) => {
-          const loc = user.location ? user.location : '';
-          if (loc.match(regex) !== null) {
-            acc += 1;
-          }
-          return acc;
-        }, 0);
-        const totDevs = repo.contributors.length;
-        repo.numDevs = numDevs;
-        repo.totDevs = totDevs;
-        return repo;
-      });
+    //   response.data = response.data.map((repo) => {
+    //     const numDevs = repo.contributors.reduce((acc, user) => {
+    //       const loc = user.location ? user.location : '';
+    //       if (loc.match(regex) !== null) {
+    //         acc += 1;
+    //       }
+    //       return acc;
+    //     }, 0);
+    //     const totDevs = repo.contributors.length;
+    //     repo.numDevs = numDevs;
+    //     repo.totDevs = totDevs;
+    //     return repo;
+    //   });
 
-      response.data.sort((a, b) => {
-        if (a.numDevs === b.numDevs) {
-          return (a.totDevs - b.totDevs);
-        }
-        return b.numDevs - a.numDevs;
-      });
+    //   response.data.sort((a, b) => {
+    //     if (a.numDevs === b.numDevs) {
+    //       return (a.totDevs - b.totDevs);
+    //     }
+    //     return b.numDevs - a.numDevs;
+    //   });
     }
 
     return response;

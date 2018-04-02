@@ -18,11 +18,37 @@ app.use(morgan('dev'));
 // app.use(middleware(compiler));
 
 app.get('/locations/:searchTerm', (req, res) => {
-  winston.log('debug', `Searching for ${req.params.searchTerm}`);
-  db.findLocation(req.params.searchTerm)
+  const { searchTerm } = req.params;
+  winston.log('debug', `Searching for ${searchTerm}`);
+
+  const regex = new RegExp(searchTerm, 'i');
+
+  db.findLocation(searchTerm)
     .then((results) => {
       winston.log('debug', `${results.length} records found`);
-      res.send(results);
+
+      const newResults = results.map((repo) => {
+        const numDevs = repo.contributors.reduce((acc, user) => {
+          const loc = user.location ? user.location : '';
+          if (loc.match(regex) !== null) {
+            acc += 1;
+          }
+          return acc;
+        }, 0);
+        const totDevs = repo.contributors.length;
+        repo.numDevs = numDevs;
+        repo.totDevs = totDevs;
+        return repo;
+      });
+
+      newResults.sort((a, b) => {
+        if (a.numDevs === b.numDevs) {
+          return (a.totDevs - b.totDevs);
+        }
+        return b.numDevs - a.numDevs;
+      });
+
+      res.send(newResults.slice(250));
     })
     .catch((error) => {
       winston.log('error', `Error ${error.message}`);
