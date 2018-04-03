@@ -15,8 +15,15 @@ const UserInfo = ({ user }) => {
     ? (<div className="userInfoLineBio"><Octicon name="quote" /> {user.bio}</div>)
     : null;
 
+  let blogURL;
+  if (user.blog && user.blog.startsWith('http')) {
+    blogURL = user.blog;
+  } else {
+    blogURL = `http://${user.blog}`;
+  }
+
   const blog = user.blog
-    ? (<div className="userInfoLine"><Octicon name="bookmark" /> {user.blog}</div>)
+    ? (<div className="userInfoLine"><Octicon name="bookmark" /> <a href={blogURL}>{user.blog}</a></div>)
     : null;
 
   const org = user.company
