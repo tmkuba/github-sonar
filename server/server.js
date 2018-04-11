@@ -57,7 +57,7 @@ app.get('/locations/:searchTerm', (req, res) => {
 });
 
 // handle GET for getting contributor list
-app.get('/contributors/:id', (req, res) => {
+app.get('/repos/:id/contributors', (req, res) => {
   const { id } = req.params;
   winston.log('debug', `Contributors for ${id}`);
 

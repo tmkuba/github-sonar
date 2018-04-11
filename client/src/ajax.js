@@ -8,7 +8,7 @@ const search = searchTerm => axios.get(`/locations/${searchTerm}`)
     console.log('AJAX error', error.message);
   });
 
-const getContributors = repoID => axios.get(`/contributors/${repoID}`)
+const getContributors = repoID => axios.get(`/repos/${repoID}/contributors`)
   .then(response => response)
   .catch((error) => {
     console.log('AJAX error', error.message);
