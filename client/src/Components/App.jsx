@@ -123,12 +123,6 @@ class App extends React.Component {
           waiting: false,
         });
       });
-
-    // set as this.state.repoFocus
-    // this.setState({
-    //   repoFocus: newRepoFocus,
-    //   userFocus: DEFAULT_USER_FOCUS,
-    // });
   }
 
   handleUserClick(userId) {

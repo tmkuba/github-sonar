@@ -43,12 +43,12 @@ const Contributors = ({
             const name = user.name
               ? (
                 <div className="contributorMain">
-                  <a href={user.html_url}><Octicon name="mark-github" /> {user.login}</a>
+                  <a href="#"><Octicon name="mark-github" /> {user.login}</a>
                     &nbsp;&bull; {user.name}
                 </div>)
               : (
                 <div className="contributorMain">
-                  <a href={user.html_url}><Octicon name="mark-github" /> {user.login}</a>
+                  <a href="#"><Octicon name="mark-github" /> {user.login}</a>
                 </div>);
 
             return (
@@ -62,6 +62,7 @@ const Contributors = ({
                   <div className="contributorSecond">
                     <Octicon name="git-pull-request" /> {user.contributions}
                      &nbsp;&bull; <Octicon name="heart" /> {user.followers}
+                     &nbsp;&bull; <a href={user.html_url}>Profile <Octicon name="link-external" /></a>
                   </div>
                 </div>
               </li>);
@@ -75,7 +76,8 @@ const Contributors = ({
 
 Contributors.propTypes = {
   repo: PropTypes.shape({
-    contributors: PropTypes.array,
+    id: PropTypes.number.isRequired,
+    contributors: PropTypes.array.isRequired,
   }).isRequired,
   clickHandler: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,

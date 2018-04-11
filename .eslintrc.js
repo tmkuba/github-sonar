@@ -12,5 +12,6 @@ module.exports = {
       "jsx-a11y/click-events-have-key-events": 1,
       "jsx-a11y/no-noninteractive-element-interactions": 1,
       "no-underscore-dangle": 1,
+      "jsx-a11y/anchor-is-valid": 1,
     },
 };

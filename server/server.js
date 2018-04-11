@@ -49,7 +49,7 @@ app.get('/locations/:searchTerm', (req, res) => {
         return b.numDevs - a.numDevs;
       });
 
-      res.send(newResults.slice(0, 150));
+      res.send(newResults.slice(0, 200));
     })
     .catch((error) => {
       winston.log('error', `Error ${error.message}`);
