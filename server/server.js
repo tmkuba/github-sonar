@@ -17,6 +17,7 @@ app.use(morgan('dev'));
 
 // app.use(middleware(compiler));
 
+// handle GET for searching locations
 app.get('/locations/:searchTerm', (req, res) => {
   const { searchTerm } = req.params;
   winston.log('debug', `Searching for ${searchTerm}`);
@@ -28,16 +29,15 @@ app.get('/locations/:searchTerm', (req, res) => {
       winston.log('debug', `${results.length} records found`);
 
       const newResults = results.map((repo) => {
-        const numDevs = repo.contributors.reduce((acc, user) => {
-          const loc = user.location ? user.location : '';
-          if (loc.match(regex) !== null) {
-            acc += 1;
+        const numDevs = Object.keys(repo.locations_gravity).reduce((memo, location) => {
+          if (location.match(regex) !== null) {
+            memo += repo.locations_gravity[location];
           }
-          return acc;
+          return memo;
         }, 0);
 
         repo.numDevs = numDevs;
-        repo.totDevs = repo.contributors.length;
+        repo.totDevs = repo.locations_gravity.__total;
 
         return repo;
       });
@@ -56,6 +56,22 @@ app.get('/locations/:searchTerm', (req, res) => {
     });
 });
 
+// handle GET for getting contributor list
+app.get('/contributors/:id', (req, res) => {
+  const { id } = req.params;
+  winston.log('debug', `Contributors for ${id}`);
+
+  db.getContributors(id)
+    .then((results) => {
+      // console.log(results);
+      res.send(results);
+    })
+    .catch((error) => {
+      winston.log('error', `Error ${error.message}`);
+    });
+});
+
+// serve static files
 app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 const PORT = process.env.PORT || 5000;
