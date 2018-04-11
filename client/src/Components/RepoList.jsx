@@ -12,6 +12,7 @@ const RepoList = ({
     <ul>
       { list.map(repo => (
         <li
+          key={repo.id}
           className={focusID === repo.id ? 'repo selected' : 'repo'}
           onClick={() => clickHandler(repo.id)}
         >

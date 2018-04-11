@@ -52,7 +52,7 @@ const Contributors = ({
                 </div>);
 
             return (
-              <li className={classes} onClick={() => clickHandler(user.id)}>
+              <li className={classes} key={user.id} onClick={() => clickHandler(user.id)}>
                 <div>
                   <img className="mini_avatar" src={user.avatar_url} alt="avatar" />
                 </div>
