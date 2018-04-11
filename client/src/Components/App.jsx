@@ -88,13 +88,47 @@ class App extends React.Component {
     });
   }
 
-  handleRepoClick(repoId) {
+  handleRepoClick(id) {
     // console.log('handleRepoClick', repoId);
-    const newRepoFocus = this.state.repoList.find(repo => repo.id === repoId);
+    // const newRepoFocus = this.state.repoList.find(repo => repo.id === repoId);
+
     this.setState({
-      repoFocus: newRepoFocus,
-      userFocus: DEFAULT_USER_FOCUS,
+      waiting: true,
     });
+
+    // get new repo focus object
+    helper.getContributors(id)
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({
+            errorMessage: '',
+            repoFocus: response.data,
+            userFocus: DEFAULT_USER_FOCUS,
+          });
+        } else {
+          this.setState({
+            errorMessage: response,
+            message: '',
+          });
+        }
+      })
+      .catch((error) => {
+        this.setState({
+          errorMessage: error.message,
+          message: '',
+        });
+      })
+      .finally(() => {
+        this.setState({
+          waiting: false,
+        });
+      });
+
+    // set as this.state.repoFocus
+    // this.setState({
+    //   repoFocus: newRepoFocus,
+    //   userFocus: DEFAULT_USER_FOCUS,
+    // });
   }
 
   handleUserClick(userId) {

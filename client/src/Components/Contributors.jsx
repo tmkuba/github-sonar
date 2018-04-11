@@ -5,7 +5,7 @@ import Octicon from 'react-component-octicons';
 const Contributors = ({
   repo, clickHandler, searchTerm, focusID,
 }) => {
-  const output = repo.full_name
+  const output = repo.id !== 0
     ? (
       <div className="column">
         <h3>
@@ -76,7 +76,6 @@ const Contributors = ({
 Contributors.propTypes = {
   repo: PropTypes.shape({
     contributors: PropTypes.array,
-    location: PropTypes.string,
   }).isRequired,
   clickHandler: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
