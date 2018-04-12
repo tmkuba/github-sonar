@@ -19,7 +19,7 @@ const RepoList = ({
           <div className="repoName"><a href="#">{repo.name}</a></div>
           <div className="repoDesc">{repo.description}</div>
           <div className="repoInfo">
-            ★ {repo.stargazers_count}
+            <Octicon name="star" /> {repo.stargazers_count}
             &nbsp;&bull; {repo.language}
             &nbsp;&bull; {repo.numDevs} / {repo.totDevs}
             &nbsp;&bull; <a href={repo.html_url}>GitHub <Octicon name="link-external" /></a>

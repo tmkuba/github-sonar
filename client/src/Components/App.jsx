@@ -41,7 +41,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.search('Nepal');
+    this.search('San Francisco');
   }
 
   // EVENT HANDLING
