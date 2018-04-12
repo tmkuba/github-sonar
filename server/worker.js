@@ -28,14 +28,14 @@ function promiseDebounce(fn, delay, count) {
   };
 }
 
-const repoGet = promiseDebounce(axios.get, 2000, 1);
+const repoGet = promiseDebounce(axios.get, 2010, 1);
 axios.get = promiseDebounce(axios.get, 750, 1);
 
 winston.level = 'debug';
 
 const REQUEST_HEADERS = {
   headers: {
-    'User-Agent': 'request',
+    'User-Agent': 'tmkuba',
     Authorization: `token ${process.env.GITHUB_API_KEY}`,
   },
 };
@@ -131,6 +131,7 @@ const downloadUserInfo = (url) => {
   return axios.get(url, REQUEST_HEADERS)
     .then((userData) => {
       // console.log('downloadUserInfo', userData.data);
+      winston.log('silly', `GOT user info ${userData.data.login}`);
       const user = userData.data;
       const output = {
         name: user.name,
@@ -148,10 +149,28 @@ const downloadUserInfo = (url) => {
     });
 };
 
+const cleanKey = (string = 'null') => {
+  let output = string === null ? 'null' : string;
+  while (output.startsWith('$')) {
+    output = output.slice(1);
+  }
+  return output;
+};
 
-const language = 'javascript';
-const minStars = 700;
-const url = `https://api.github.com/search/repositories?q=+language:${language}+stars:>=${minStars}+sort:stars`;
+// const language = 'go';
+// const minStars = 75;
+// const url = `https://api.github.com/search/repositories?q=+language:${language}+stars:>=${minStars}+sort:stars`;
+
+// JavaScript #1000+
+// const url = 'https://api.github.com/search/repositories?q=+language:javascript+stars:<=3556+sort:stars';
+
+// Python #1000+
+// const url = 'https://api.github.com/search/repositories?q=+language:python+stars:<=1297+sort:stars';
+
+// Go #1000+
+// db.repos.find({language: "Go"}).sort({stargazers_count: 1}).limit(2)
+// db.repos.find({language: "Go"}).count(); // 1020
+const url = 'https://api.github.com/search/repositories?q=+language:go+stars:<=675+sort:stars';
 
 const go = async () => {
   const repoIDs = await db.getIDs();
@@ -162,7 +181,7 @@ const go = async () => {
 
   // console.log(repoDone, 'repoDone');
 
-  downloadRepos(url, 50)
+  downloadRepos(url, 25)
     .then((repoList) => {
       repoList.forEach((repo) => {
         winston.log('debug', 'repo:', repo.full_name);
@@ -183,19 +202,48 @@ const go = async () => {
           .then((contributors) => {
             Promise.all(contributors)
               .then((allContributors) => {
-                const locationDict = allContributors.reduce((memo, contrib) => {
-                  memo[contrib.location] = memo[contrib.location]
-                    ? memo[contrib.location] + contrib.contributions
-                    : contrib.contributions;
+                // calculate locations_gravity
+                const locationGravity = allContributors.reduce((memo, contrib) => {
+                  const cleanLocation = cleanKey(contrib.location);
+                  memo[cleanLocation] = memo[cleanLocation]
+                    ? memo[cleanLocation] + 1
+                    : 1;
+                  memo.__total += 1;
                   return memo;
-                }, {});
+                }, { __total: 0 });
 
-                repo.contributors = allContributors;
-                repo.gravity = locationDict;
-                repo.locations = Object.keys(repo.gravity);
+                const locationList = Object.keys(locationGravity).filter(item => (item !== '__total' && item !== 'null'));
+
+                // generate companies_gravity
+                const companyGravity = allContributors.reduce((memo, contrib) => {
+                  const cleanCompany = cleanKey(contrib.company);
+                  memo[cleanCompany] = memo[cleanCompany]
+                    ? memo[cleanCompany] + 1
+                    : 1;
+                  memo.__total += 1;
+                  return memo;
+                }, { __total: 0 });
+
+                const companyList = Object.keys(companyGravity).filter(item => (item !== '__total' && item !== 'null'));
+
+                // save contributors separately
+                const newContributors = {
+                  id: repo.id,
+                  contributors: allContributors,
+                };
+
+                db.saveContributors(newContributors)
+                  .then(() => {
+                    winston.log('debug', `contributors: ${newContributors.id}`);
+                  });
+
+                repo.locations = locationList;
+                repo.companies = companyList;
+                repo.locations_gravity = locationGravity;
+                repo.companies_gravity = companyGravity;
 
                 // store into DB
-                db.save(repo)
+                db.saveRepo(repo)
                   .then(() => {
                     winston.log('debug', `${repo.full_name} saved. [${new Date().toString()}]`);
                     repoDone[repo.id] = true;
