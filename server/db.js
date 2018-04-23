@@ -28,9 +28,6 @@ const repoSchema = mongoose.Schema({
   url: String,
   contributors_url: String,
 
-  gravity: {
-  },
-
   locations: [String],
 
   locations_gravity: {
@@ -40,26 +37,6 @@ const repoSchema = mongoose.Schema({
 
   companies_gravity: {
   },
-
-  contributors: [{
-    id: Number,
-    login: String,
-    avatar_url: String,
-    html_url: String,
-    url: String,
-    Type: String,
-    contributions: Number,
-
-    name: String,
-    company: String,
-    location: String,
-    email: String,
-    bio: String,
-    followers: Number,
-    created_at: String,
-    blog: String,
-    public_repos: Number,
-  }],
 });
 
 const contribSchema = mongoose.Schema({
@@ -96,7 +73,6 @@ const updateRepo = (id, data) => Repo.update({ id }, data);
 
 const getIDs = () => Repo.find().select('id');
 
-// db.repos.find( { "locations": /Spain/ }).pretty()
 const findLocation = searchTerm => Repo.find({ locations: new RegExp(searchTerm, 'i') }).sort('-stargazers_count').lean();
 
 const findCompany = searchTerm => Repo.find({ companies: new RegExp(searchTerm, 'i') }).sort('-stargazers_count').lean();
