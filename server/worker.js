@@ -157,6 +157,40 @@ const cleanKey = (string = 'null') => {
   return output;
 };
 
+const calcGravities = (allContributors) => {
+  // calculate locations_gravity
+  const locationGravity = allContributors.reduce((memo, contrib) => {
+    const cleanLocation = cleanKey(contrib.location);
+    memo[cleanLocation] = memo[cleanLocation]
+      ? memo[cleanLocation] + 1
+      : 1;
+    memo.__total += 1;
+    return memo;
+  }, { __total: 0 });
+
+  const locationList = Object.keys(locationGravity).filter(item => (item !== '__total' && item !== 'null'));
+
+  // generate companies_gravity
+  const companyGravity = allContributors.reduce((memo, contrib) => {
+    const cleanCompany = cleanKey(contrib.company);
+    memo[cleanCompany] = memo[cleanCompany]
+      ? memo[cleanCompany] + 1
+      : 1;
+    memo.__total += 1;
+    return memo;
+  }, { __total: 0 });
+
+  const companyList = Object.keys(companyGravity).filter(item => (item !== '__total' && item !== 'null'));
+
+  return {
+    locations_gravity: locationGravity,
+    locations: locationList,
+    companies_gravity: companyGravity,
+    companies: companyList,
+  };
+};
+
+
 // const language = 'go';
 // const minStars = 75;
 // const url = `https://api.github.com/search/repositories?q=+language:${language}+stars:>=${minStars}+sort:stars`;
@@ -202,30 +236,6 @@ const go = async () => {
           .then((contributors) => {
             Promise.all(contributors)
               .then((allContributors) => {
-                // calculate locations_gravity
-                const locationGravity = allContributors.reduce((memo, contrib) => {
-                  const cleanLocation = cleanKey(contrib.location);
-                  memo[cleanLocation] = memo[cleanLocation]
-                    ? memo[cleanLocation] + 1
-                    : 1;
-                  memo.__total += 1;
-                  return memo;
-                }, { __total: 0 });
-
-                const locationList = Object.keys(locationGravity).filter(item => (item !== '__total' && item !== 'null'));
-
-                // generate companies_gravity
-                const companyGravity = allContributors.reduce((memo, contrib) => {
-                  const cleanCompany = cleanKey(contrib.company);
-                  memo[cleanCompany] = memo[cleanCompany]
-                    ? memo[cleanCompany] + 1
-                    : 1;
-                  memo.__total += 1;
-                  return memo;
-                }, { __total: 0 });
-
-                const companyList = Object.keys(companyGravity).filter(item => (item !== '__total' && item !== 'null'));
-
                 // save contributors separately
                 const newContributors = {
                   id: repo.id,
@@ -234,22 +244,22 @@ const go = async () => {
 
                 db.saveContributors(newContributors)
                   .then(() => {
-                    winston.log('debug', `contributors: ${newContributors.id}`);
+                    winston.log('debug', `saved contributors: ${newContributors.id}`);
+                  })
+                  .catch((error) => {
+                    winston.log('error', `Error saving contributors ${newContributors.id}: ${error.message}`);
                   });
 
-                repo.locations = locationList;
-                repo.companies = companyList;
-                repo.locations_gravity = locationGravity;
-                repo.companies_gravity = companyGravity;
+                const newRepo = Object.assign({}, repo, calcGravities(allContributors));
 
                 // store into DB
-                db.saveRepo(repo)
+                db.saveRepo(newRepo)
                   .then(() => {
                     winston.log('debug', `${repo.full_name} saved. [${new Date().toString()}]`);
                     repoDone[repo.id] = true;
                   })
                   .catch((error) => {
-                    winston.log('error', `Error saving ${repo.name}: ${error.message}`);
+                    winston.log('error', `Error saving repo ${repo.name}: ${error.message}`);
                   });
               });
           });
