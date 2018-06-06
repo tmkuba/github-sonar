@@ -1,9 +1,24 @@
 import React from 'react';
+import Modal from 'react-modal';
 
 import helper from '../ajax';
 import RepoList from './RepoList';
 import Contributors from './Contributors';
 import UserInfo from './UserInfo';
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: '500px',
+    textAlign: 'center',
+    backgroundColor: '#efefef',
+  },
+};
 
 const DEFAULT_REPO_FOCUS = {
   id: 0,
@@ -13,6 +28,8 @@ const DEFAULT_REPO_FOCUS = {
 const DEFAULT_USER_FOCUS = {
   id: 0,
 };
+
+Modal.setAppElement('#app');
 
 class App extends React.Component {
   constructor(props) {
@@ -30,7 +47,13 @@ class App extends React.Component {
       filter: 'All',
       repoFocus: DEFAULT_REPO_FOCUS,
       userFocus: DEFAULT_USER_FOCUS,
+
+      modalIsOpen: false,
     };
+
+    this.openModal = this.openModal.bind(this);
+    // this.afterOpenModal = this.afterOpenModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
@@ -42,6 +65,21 @@ class App extends React.Component {
 
   componentDidMount() {
     this.search('San Francisco');
+  }
+
+
+  openModal() {
+    this.setState({ modalIsOpen: true });
+  }
+
+  // afterOpenModal() {
+  //   // references are now sync'd and can be accessed.
+  //   // this.subtitle.style.color = '#f00';
+  //   this;
+  // }
+
+  closeModal() {
+    this.setState({ modalIsOpen: false });
   }
 
   // EVENT HANDLING
@@ -188,7 +226,8 @@ class App extends React.Component {
         <div className="header">
           <div className="leftTop">
             <h1>
-              GitHub Sonar
+              <a href="#" onClick={this.openModal}><span role="img" aria-label="info">📡</span></a>
+              &nbsp;GitHub Sonar
             </h1>
             <div className="searchBar">
               <input
@@ -230,6 +269,37 @@ class App extends React.Component {
           </div>
         </div>
         <div className="container">
+          <Modal
+            isOpen={this.state.modalIsOpen}
+            // onAfterOpen={this.afterOpenModal}
+            onRequestClose={this.closeModal}
+            // className="modalBackground"
+            // overlayClassName="modal"
+            style={customStyles}
+            contentLabel="Information Modal"
+          >
+            <div>
+              <p>
+                <img src="profile.png" alt="profilepicture" />
+              </p>
+              <p>
+              GitHub Sonar is a project created by Mark Kuba,
+              a software engineer in the San Francisco Bay Area.
+
+              He is currently open to new opportunities in SF or
+              Tokyo.
+              </p>
+              <p>
+              Say hello if you would like to chat!
+              </p>
+              <p>
+                <a href="https://www.linkedin.com/in/tmkuba/">LinkedIn</a>
+                &nbsp;&bull; <a href="https://www.github.com/tmkuba">GitHub</a>
+              </p>
+              <button onClick={this.closeModal}>Okay!</button>
+            </div>
+          </Modal>
+
           <RepoList
             list={this.state.filteredList}
             clickHandler={this.handleRepoClick}
