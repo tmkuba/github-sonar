@@ -22,8 +22,9 @@ const app = express();
 app.use(morgan('dev'));
 
 // app.use(middleware(compiler));
+const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 
-const client = redis.createClient();
+const client = redis.createClient(6379, REDIS_HOST);
 
 // handle GET for searching locations
 app.get('/locations/:searchTerm', (req, res) => {
