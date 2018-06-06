@@ -14,6 +14,8 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    width: '500px',
+    textAlign: 'center',
     backgroundColor: '#efefef',
   },
 };
@@ -224,7 +226,8 @@ class App extends React.Component {
         <div className="header">
           <div className="leftTop">
             <h1>
-              GitHub Sonar <a href="#" onClick={this.openModal}><span role="img" aria-label="info">ℹ️</span></a>
+              <a href="#" onClick={this.openModal}><span role="img" aria-label="info">📡</span></a>
+              &nbsp;GitHub Sonar
             </h1>
             <div className="searchBar">
               <input
@@ -277,18 +280,21 @@ class App extends React.Component {
           >
             <div>
               <p>
+                <img src="profile.png" alt="profilepicture" />
+              </p>
+              <p>
               GitHub Sonar is a project created by Mark Kuba,
               a software engineer in the San Francisco Bay Area.
 
               He is currently open to new opportunities in SF or
-              Tokyo, Japan.
+              Tokyo.
               </p>
               <p>
-              Please say hello if you are interested!
+              Say hello if you would like to chat!
               </p>
               <p>
                 <a href="https://www.linkedin.com/in/tmkuba/">LinkedIn</a>
-                &nbsp;| <a href="https://www.github.com/tmkuba">GitHub</a>
+                &nbsp;&bull; <a href="https://www.github.com/tmkuba">GitHub</a>
               </p>
               <button onClick={this.closeModal}>Okay!</button>
             </div>
