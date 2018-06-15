@@ -9,7 +9,7 @@ Are you a developer new to a city and want to make connections?  Want to relocat
 **Deployment Tech**: AWS: Route 53, Cloudfront, Elastic Beanstalk, ElastiCache
 
 ## Screenshot
-![Screenshot](https://user-images.githubusercontent.com/17801759/41486020-aaa5d3f8-7097-11e8-8329-42013d65f3f6.png)
+![Screenshot](https://user-images.githubusercontent.com/17801759/41489834-36b275be-70a6-11e8-89f9-78264ced16a7.png)
 
 
 ## System Diagram
