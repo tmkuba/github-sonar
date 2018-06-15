@@ -221,7 +221,7 @@ class App extends React.Component {
   render() {
     const googleMapImage = this.state.lastSearched
       ? `https://maps.googleapis.com/maps/api/staticmap?center=${this.state.lastSearched}&zoom=9&size=600x135&key=${process.env.GOOGLE_API_KEY}`
-      : 'defaltmap.png';
+      : 'defaultmap.png';
 
     return (
       <div>
