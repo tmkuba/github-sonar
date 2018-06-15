@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const webpack = require('webpack');
 dotenv.config();
 
-module.exports = {
+const config = {
   entry: path.resolve(__dirname, 'client', 'src', 'index.jsx'),
 
   module: {
@@ -26,8 +26,7 @@ module.exports = {
   },
 
   plugins: [
-    // new dotenv()
-    new webpack.EnvironmentPlugin(['GOOGLE_API_KEY']),
+    new webpack.EnvironmentPlugin(['GOOGLE_API_KEY', 'AJAX_URL']),
   ],
 
   output: {
@@ -35,4 +34,8 @@ module.exports = {
     path: path.resolve(__dirname, 'client', 'dist'),
     publicPath: '/'
   }
+};
+
+module.exports = (env, argv) => {
+  return config;
 };
