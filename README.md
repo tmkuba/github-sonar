@@ -4,7 +4,7 @@ Are you a developer new to a city and want to make connections?  Want to relocat
 
 [GitHub Sonar - Try Out the Live Demo!](http://bit.ly/githubsonar)
 
-**Technologies Used**: React, Node.js, Express, MongoDB
+**Technologies Used**: React, Node.js, Express, Redis, MongoDB
 
 **Deployment Tech**: AWS: Route 53, Cloudfront, Elastic Beanstalk, ElastiCache
 
