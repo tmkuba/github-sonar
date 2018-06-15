@@ -37,8 +37,8 @@ const whitelist = [
   'https://d1wj09ghjopny0.cloudfront.net',
   'http://github-sonar.s3.amazonaws.com',
   'https://github-sonar.s3.amazonaws.com',
-  'http://github-sonar.us-west-2.elasticbeanstalk.com/',
-  'https://github-sonar.us-west-2.elasticbeanstalk.com/',
+  'http://github-sonar.us-west-2.elasticbeanstalk.com',
+  'https://github-sonar.us-west-2.elasticbeanstalk.com',
   'http://www.githubsonar.com',
   'https://www.githubsonar.com',
   'http://githubsonar.com',
@@ -49,17 +49,15 @@ const whitelist = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1) {
+    if (whitelist.indexOf(origin) !== -1 || origin === undefined) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
 };
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(cors(corsOptions));
-}
+app.use(cors(corsOptions));
 
 // handle GET for searching locations
 app.get('/locations/:searchTerm', (req, res) => {
