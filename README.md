@@ -7,3 +7,11 @@ Are you a developer new to a city and want to make connections?  Want to relocat
 **Technologies Used**: React, Node.js, Express, MongoDB
 
 **Deployment Tech**: AWS: Route 53, Cloudfront, Elastic Beanstalk, ElastiCache
+
+## Screenshot
+![Screenshot](https://user-images.githubusercontent.com/17801759/41486020-aaa5d3f8-7097-11e8-8329-42013d65f3f6.png)
+
+
+## System Diagram
+![System Diagram](https://user-images.githubusercontent.com/17801759/41485980-7f859244-7097-11e8-9373-8f63ef31cab1.png)
+
