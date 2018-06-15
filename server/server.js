@@ -3,6 +3,7 @@ const path = require('path');
 const winston = require('winston');
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const redis = require('redis');
 const bluebird = require('bluebird');
 
@@ -25,6 +26,40 @@ app.use(morgan('dev'));
 const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 
 const client = redis.createClient(6379, REDIS_HOST);
+
+
+// serve static files
+app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
+
+// CORS headers
+const whitelist = [
+  'http://d1wj09ghjopny0.cloudfront.net',
+  'https://d1wj09ghjopny0.cloudfront.net',
+  'http://github-sonar.s3.amazonaws.com',
+  'https://github-sonar.s3.amazonaws.com',
+  'http://github-sonar.us-west-2.elasticbeanstalk.com/',
+  'https://github-sonar.us-west-2.elasticbeanstalk.com/',
+  'http://www.githubsonar.com',
+  'https://www.githubsonar.com',
+  'http://githubsonar.com',
+  'https://githubsonar.com',
+  'http://api.githubsonar.com',
+  'https://api.githubsonar.com',
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors(corsOptions));
+}
 
 // handle GET for searching locations
 app.get('/locations/:searchTerm', (req, res) => {
@@ -110,9 +145,6 @@ app.get('/repos/:id/contributors', (req, res) => {
       winston.log('error', `Redis Error ${err.message}`);
     });
 });
-
-// serve static files
-app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
